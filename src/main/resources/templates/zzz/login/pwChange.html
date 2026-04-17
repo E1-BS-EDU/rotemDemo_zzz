@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="pwChangeModal">
+
+    <div class="layer-wrap" id="pwChangeLayer" style="display: none;">
+
+        <!-- Header -->
+        <div class="layer__header">
+            <h3 class="layer-title" id="pwChangeTitle">비밀번호 변경</h3>
+            <div class="close-box">
+                <button type="button" class="btn-icon btn-default" onclick="layerPopupClose('pwChangeLayer')" aria-label="닫기">
+                    <span class="icon icon-close" aria-hidden="true"></span>
+                </button>
+            </div>
+        </div>
+        <!-- Header -->
+
+
+        <!-- Contents -->
+        <div class="layer__body">
+            <form id="pwChangeForm">
+				
+				
+				<div class="pw-change">
+					<div class="form--register">
+						<dl>
+							<dt><label for="pwEmail">이메일</label></dt>
+							<dd><input id="pwEmail" name="pwEmail" placeholder="이메일을 입력하세요" /></dd>
+						</dl>
+						<dl>
+							<dt><label for="prePw">현재비밀번호</label></dt>
+							<dd><input type="password" id="prePw" name="prePw" placeholder="현재 비밀번호" /></dd>
+						</dl>						
+						<dl>
+							<dt><label for="newPw">새 비밀번호</label></dt>
+							<dd>
+								<input type="password" id="newPw" name="newPw" placeholder="영문, 숫자, 특수문자 포함 8~20자" />
+								<p class="validation-msg" id="newPwMsg"></p>
+							</dd>
+						</dl>
+						<dl>
+							<dt><label for="confirmPw">새 비밀번호 확인</label></dt>
+							<dd>
+								<input type="password" id="confirmPw" name="confirmPw" placeholder="새 비밀번호를 다시 입력하세요" />
+								<p class="validation-msg" id="confirmPwMsg"></p>
+							</dd>
+						</dl>
+					</div>
+					
+					
+					<!-- Buttons -->
+					<div class="layer__btns">
+						<button type="button" class="btn btn--contained btn--gray">취소</button>
+		                <button type="submit" class="btn btn--contained btn--primary" disabled>변경하기</button>
+		            </div>
+					<!-- Buttons -->
+				</div>
+				
+				
+                <!--<div class="input-group">
+                    <label for="pwEmail">이메일</label>
+                    <div class="input-wrapper">
+                        <input id="pwEmail" name="email" placeholder="이메일을 입력하세요" />
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="newPw">새 비밀번호</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="newPw" name="newPw" placeholder="영문, 숫자, 특수문자 포함 8~20자" />
+                    </div>
+                    <p class="validation-msg" id="newPwMsg"></p>
+                </div>
+
+                <div class="input-group">
+                    <label for="confirmPw">새 비밀번호 확인</label>
+                    <div class="input-wrapper">
+                        <input type="password" id="confirmPw" name="confirmPw" placeholder="새 비밀번호를 다시 입력하세요" />
+                    </div>
+                    <p class="validation-msg" id="confirmPwMsg"></p>
+                </div>
+
+                <div class="btn-group">
+                    <button type="button" class="btn btn--contained btn--gray" id="cancelPwChange">취소</button>
+                    <button type="submit" class="btn btn--contained btn--primary" id="btnSubmit" disabled>변경하기</button>
+                </div>-->
+
+            </form>
+        </div>
+        <!-- Contents -->
+
+
+    </div>
+</th:block>
+
+</html>

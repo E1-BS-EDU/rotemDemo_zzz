@@ -1,0 +1,9 @@
+spring:
+  profiles:
+    active: local   # [필수] 이 한 줄이 있어야 application-local.yml을 읽습니다.
+  config:
+    # [핵심] profiles 폴더 밑에 있는 설정 파일들도 가져와라! (optional은 폴더가 없어도 에러 안 나게 함)
+    import: optional:classpath:/profiles/
+
+  application:
+    name: zzz-system

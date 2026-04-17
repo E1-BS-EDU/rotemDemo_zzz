@@ -1,0 +1,64 @@
+server:
+  address: 0.0.0.0
+  port: 9001 # 메인 포털 포트
+  type: local
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+
+spring:
+  # 1. Servlet 설정
+  servlet:
+    multipart:
+      max-file-size: 2000MB
+      max-request-size: 2000MB
+
+  # 2. Devtools 및 Thymeleaf 설정
+  devtools:
+    livereload:
+      enabled: true
+  thymeleaf:
+    enabled: true
+    cache: false
+    mode: HTML
+    suffix: .html
+    prefix: classpath:/templates/
+    check-template-location: true
+    encoding: UTF-8
+
+  # 3. DataSource 설정 (가장 중요: spring 바로 아래에 위치해야 함)
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # [수정 중요] jdbc-url -> url 로 변경해야 Spring Boot가 인식합니다.
+    url: jdbc:mysql://192.168.0.32:3306/e1rnd_zzz?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=utf8&connectionCollation=utf8_general_ci&allowPublicKeyRetrieval=true&allowMultiQueries=true&profileSQL=true&logger=Slf4JLogger&maxQuerySizeToLog=999999
+    username: root
+    password: 1234
+    
+    # HikariCP 설정
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 2
+      connection-init-sql: SET NAMES utf8 COLLATE utf8_general_ci;
+      connection-timeout: 60000
+      max-lifetime: 1800000
+      idle-timeout: 600000
+
+# MyBatis 설정 (spring과 동일 레벨)
+# MyBatis 설정
+mybatis:
+  mapper-locations: classpath:mybatis/sql/*.xml
+
+
+# [추가 필요]
+app:
+  services:
+    wdc: http://localhost:8082
+    zzz: http://localhost:9003
+    zzz-api: http://localhost:9002
+
+jwt:
+  secret-key: "e1portal_secret_key_must_be_very_long_and_secure_256bit_value" # JwtUtil에서 쓰는 키
+  expiration: 36000000
+

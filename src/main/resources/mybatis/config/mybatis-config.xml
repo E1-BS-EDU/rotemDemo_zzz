@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+
+<configuration>
+    <settings>
+        <!-- A_Column > aColumn으로 자동 매핑 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!-- 데이터베이스 응답 시간 타임아웃 -->
+        <setting name="defaultStatementTimeout" value="25"/>
+        <!-- 결과가 Map타입일 경우 Null인 컬럼값을 그대로 Null 처리 -->
+        <setting name="callSettersOnNulls" value="true"/>
+        <!-- 지연로딩 실행여부 -->
+        <setting name="lazyLoadingEnabled" value="false"/>
+        <!-- parameter mapping이 되지 않고 넘어가더라도 DB에 null로 값을 입력 -->
+        <setting name="jdbcTypeForNull" value="NULL" />
+    </settings>
+</configuration>

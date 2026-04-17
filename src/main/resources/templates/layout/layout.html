@@ -1,0 +1,54 @@
+<!doctype html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E1 Portal System</title>
+    <th:block th:replace="~{fragments/config :: config}"></th:block>
+    <th:block
+      th:replace="~{fragments/portal_config :: portal_config}"
+    ></th:block>
+    <script type="text/javascript">
+      $(document).ready(async function () {
+        localStorage.setItem("siteLang", "KO");
+        // E1 객체가 로드되었는지 확인 후 실행
+        if (typeof E1 !== "undefined" && E1.I18n) {
+          // 1. 라이브러리 초기화 (API 호출 + 메시지 수신 대기)
+          await E1.I18n.init();
+
+          // 2. (옵션) 언어 변경 감지 리스너
+          $(window).on("langChanged", function (e, newLang) {
+            // 현재 페이지에 gridInit 함수가 있다면 그리드 재설정
+            if (typeof gridInit === "function") {
+              console.log("   -> 그리드 헤더 재설정 로직 실행");
+            }
+          });
+        } else {
+          console.error(
+            "❌ [Error] commonLang.js가 로드되지 않았습니다. 경로를 확인하세요.",
+          );
+        }
+      });
+    </script>
+  </head>
+
+  <body>
+    <div class="wrap">
+      <div th:replace="~{fragments/header :: header}"></div>
+
+      <div class="container">
+        <div th:replace="~{fragments/menu :: menu}"></div>
+
+        <div class="content">
+          <div layout:fragment="content"></div>
+        </div>
+      </div>
+
+      <div th:replace="~{fragments/footer :: footer}"></div>
+      <th:block th:replace="~{zzz/login/pwChange :: pwChangeModal}"></th:block>
+    </div>
+  </body>
+</html>

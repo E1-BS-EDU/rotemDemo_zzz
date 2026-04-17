@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rotemDemo.zzz.mapper.SystemMapper">
+    
+    <select id="selectSystemList" resultType="java.util.Map">
+        SELECT sys_id, sys_nm
+          FROM zzz_system_info
+         WHERE use_yn = 'Y'
+         and sys_id in (
+                 select distinct sys_id
+                   from zzz_role_user_auth b
+                  where b.emp_id  = #{userId} )
+         ORDER BY sys_seq ASC
+    </select>
+    
+	<select id="selectSystemUrl" resultType="String">
+	    SELECT url_path
+	      FROM zzz_system_path
+	     WHERE sys_id = #{sysId}
+	       AND dvl_mode = #{dvlMode}
+	       AND use_yn = 'Y'
+	     LIMIT 1
+	</select>
+	    
+</mapper>
+

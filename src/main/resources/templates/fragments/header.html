@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<div th:fragment="header" class="header">
+	
+	<div class="header__logo">
+		<h1><a href="/main"><img th:src="@{/img/logo-vertical-white2.svg}" alt="이원정보기술"></a></h1>
+	</div>
+	
+	<div class="header__nav">
+		<div class="header__system" id="sysListContainer"></div>	
+		
+		<div class="header__utill">
+			<a href="http://webmail.e1i.co.kr" target="_blank" class="btn btn--subtle btn--gray">
+				하이웍스 바로가기
+				<i class="icon icon-window icon--gray" aria-hidden="true"></i>
+			</a>
+		</div>		
+	</div>
+	
+	<div class="header__icons only-mobile">
+		<button type="button" aria-label="전체메뉴" class="btn-icon gnb-open">
+		    <i class="icon icon-menu icon--black" aria-hidden="true"></i>
+		</button>
+	</div>
+
+	<script>
+		(function () {
+			// DOM 준비 후 실행
+			document.addEventListener("DOMContentLoaded", function () {
+
+				/* =========================
+				   Responsive
+				========================= */
+				function setResponsive() {
+					const wrap = document.querySelector(".wrap");
+					if(!wrap) return;
+	
+					const deviceWidth = document.body.clientWidth;
+	
+					if(deviceWidth <= 768){
+						wrap.classList.add("responsive-mobile");
+					}else{
+						wrap.classList.remove("responsive-mobile");
+					}
+				}
+	
+				let resizeTimer;
+	
+				window.addEventListener("resize", function () {
+					clearTimeout(resizeTimer);
+					resizeTimer = setTimeout(function () {
+						setResponsive();
+						document.querySelector(".gnb").classList.remove("isOpen");
+					}, 100);
+				});
+	
+				window.addEventListener("load", function () {
+					setResponsive();
+				});
+	
+				/* =========================
+					Mobile GNB
+				========================= */
+				const closeBtn = document.querySelector(".gnb-close");
+				const openBtn = document.querySelector(".gnb-open");
+				const gnb = document.querySelector(".gnb");
+	
+				closeBtn.addEventListener("click", function () {
+					gnb.classList.remove("isOpen");
+				});
+				openBtn.addEventListener("click", function (){
+					gnb.classList.add("isOpen");				
+				});
+				
+				
+			});
+		})();
+	</script>
+	
+</div>
+</html>

@@ -1,0 +1,307 @@
+<!doctype html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <body>
+    <div class="gnb" id="gnb" th:fragment="menu">
+      <button
+        type="button"
+        aria-label="닫기"
+        class="btn-icon gnb-close only-mobile"
+      >
+        <i class="icon icon-close icon--strong" aria-hidden="true"></i>
+      </button>
+      
+      <div class="users" id="userArea">
+        <div class="users__img">
+          <img
+            src="/img/img-user.png"
+            alt="프로필사진"
+          />
+        </div>
+        
+        <dl class="users__name">
+			<dt id="userNmDisplay" name="userNmDisplay">홍길동</dt>
+			<dd id="deptNmDisplay" name="deptNmDisplay"></dd>
+		</dl>
+        
+        <div class="users__btn">
+          <button
+            type="button"
+            class="btn btn--outlined btn--inverse"
+            id="openPwChange"
+          >
+            비밀번호 변경
+          </button>
+          <button
+            type="button"
+            class="btn btn--outlined btn--inverse"
+            id="userBtnLogout"
+          >
+            <i class="icon icon-logout icon--inverse" aria-hidden="true"></i
+            >로그아웃
+          </button>
+        </div>
+		<!-- User info -->
+     </div>
+
+      <script>
+        $(document).ready(function () {
+          // 1. [핵심] 공통 함수 호출로 시스템 목록 로드
+          initPortalHeader();
+
+          // 2. 사용자 메뉴 드롭다운 이벤트
+          $("#userBtnLogout").on("click", function (e) {
+            e.stopPropagation();
+            apiLogout();
+          });
+        });
+      </script>
+
+      <div class="gnb__title">
+        <button
+          type="button"
+          aria-label="닫기"
+          class="gnb-close"
+          style="display: none"
+        >
+          <i class="icon icon-close icon--inverse" aria-hidden="true"></i>
+        </button>
+      </div>
+
+      <ul class="gnb__list" id="portalMenuList"></ul>
+
+	  <script>
+	    $(document).ready(function () {         
+	      const userNm = localStorage.getItem("userNm");
+		  const deptNm = localStorage.getItem("deptNm");
+		  const positionNm = localStorage.getItem("positionNm");
+		  
+	      if (userNm) {
+			let diplayNm = `${userNm} ${positionNm}`;
+	        $("#userNmDisplay").text(diplayNm);
+			$("#deptNmDisplay").text(deptNm);
+	      }			
+
+	      // 이벤트 위임
+	      $("#portalMenuList").on("click", ".menu-item", function (e) {
+	        const parentLi = $(this).parent("li");
+
+	        if (e.target.nextElementSibling === null) {
+	          $(".gnb").removeClass("isOpen");
+	        }
+
+	        // 1. 하위 메뉴가 있는 경우 (폴더) -> 펼치기/접기
+	        if (parentLi.hasClass("has-child")) {
+	          e.preventDefault();
+	          const $subMenu = parentLi.children(".sub-menu");
+	          const isExpanded = $subMenu.is(":visible");
+	          if (isExpanded) {
+	            parentLi.addClass("closed").removeClass("open");
+	            $subMenu.slideUp(200);
+	          } else {
+	            parentLi.removeClass("closed").addClass("open");
+	            $subMenu.slideDown(200);
+	          }
+	        }
+	        // 2. 하위 메뉴가 없는 경우 (링크)
+	        else {
+	          e.preventDefault(); // 기본 이동 방지
+
+	          const originalUrl = $(this).data("url");         
+	          const menuCd = $(this).data("menucd");           // [핵심] 메뉴 코드 추출
+	          const sysId = $(".system__btn.active").data("id") || sessionStorage.getItem("portal.lastSysId"); 
+	          
+	          let targetUrl = originalUrl;                     
+	          let path = [$(this).text().trim()];
+	          let $currUl = parentLi.parent("ul");
+
+	          while ($currUl.hasClass("sub-menu")) {
+	            let $parentMenuLi = $currUl.parent("li");
+	            let parentName = $parentMenuLi.children("a.menu-item").text().trim();
+	            path.unshift(parentName);
+	            $currUl = $parentMenuLi.parent("ul");
+	          }
+
+	          let sysName = $("#gnbTitle").text().trim();
+	          path.unshift(sysName);
+	          const fullTitle = path.join(" > ");
+
+	          if (!targetUrl || targetUrl === "#" || targetUrl === "null" || targetUrl.trim() === "") {
+	            const msg = encodeURIComponent("준비 중이거나 연결된 페이지가 없습니다.");
+	            targetUrl = "/error/view?code=404&msg=" + msg;
+	          } else {
+	            if (sysId && menuCd) {
+	              const separator = targetUrl.indexOf('?') !== -1 ? '&' : '?';
+	              targetUrl += `${separator}sysId=${sysId}&menuCd=${menuCd}`;
+	            }
+	          }
+
+	          if (typeof savePortalMenuState === "function") {
+	            savePortalMenuState(sysId, originalUrl, fullTitle);
+	          }
+	          
+	          // [추가] 새로고침 대비 세션 스토리지에 메뉴 코드 저장
+	          sessionStorage.setItem("portal.lastMenuCd", menuCd);
+	          
+	          // [수정] 고유 메뉴 코드(menuCd)를 넘겨서 활성화 처리
+	          setActiveMenu(menuCd, originalUrl);
+	          
+	          loadMenu(targetUrl, fullTitle);
+	        }
+	      });
+	    });
+
+	    // [수정] URL 대신 메뉴 코드(menuCd)를 우선으로 찾아 하이라이트 처리하는 함수
+	    function setActiveMenu(menuCd, url) {
+	      $("#portalMenuList .menu-item").removeClass("menu--active");
+
+	      let $target;
+	      
+	      // 1. menuCd로 고유 메뉴 찾기
+	      if (menuCd) {
+	        $target = $("#portalMenuList .menu-item").filter(function () {
+	          return String($(this).data("menucd")) === String(menuCd);
+	        });
+	      }
+
+	      // 2. menuCd가 없는 예외 상황을 위한 방어 로직 (url로 찾되 첫 번째 것만)
+	      if (!$target || $target.length === 0) {
+	        if (!url) return;
+	        $target = $("#portalMenuList .menu-item").filter(function () {
+	          return $(this).data("url") === url;
+	        });
+	        if ($target.length > 1) $target = $target.first();
+	      }
+
+	      if (!$target || $target.length === 0) return;
+
+	      $target.addClass("menu--active");
+
+	      // 상위 폴더들 열어주기
+	      let $li = $target.parent("li");
+	      while ($li.length) {
+	        const $parent = $li.parent("ul").parent("li");
+	        if ($parent.length && $parent.hasClass("has-child")) {
+	          $parent.addClass("open").removeClass("closed");
+	          $parent.children(".sub-menu").show();
+	        }
+	        $li = $parent;
+	      }
+		  
+	        const safeName = $target[0].innerText;
+	        const iframe = document.getElementById("workFrame");
+	        if (iframe) {
+	          iframe.onload = function () {
+	              iframe.contentWindow.postMessage(
+	                  { type: "CONTENT_TITLE", title: safeName },
+	                  "*"
+	              );
+	          };
+	        }
+	    }
+
+	    // 메뉴 업데이트 함수
+	    function updateSideMenu(sysId, sysNm) {
+	      if (sysNm) $("#gnbTitle").text(sysNm);
+
+	      const userId = localStorage.getItem("userId");
+	      
+	      fnAjaxPortal(
+	        "/api/portal/menuList",
+	        "POST",
+	        { sysId: sysId, userId: userId },
+	        function (res) {
+	          if (res.result) {
+	            const html = renderMenuHtml(res.data);
+	            if (html) {
+	              $("#portalMenuList").html(html);
+	              if (typeof tryRestorePortalMenu === "function") {
+	                tryRestorePortalMenu(sysId);
+	              }
+	              const savedSysId = sessionStorage.getItem("portal.lastSysId");
+	              const savedUrl = sessionStorage.getItem("portal.lastMenuUrl");
+	              // [추가] 세션에서 메뉴 코드 꺼내오기
+	              const savedMenuCd = sessionStorage.getItem("portal.lastMenuCd"); 
+
+	              if (savedUrl && String(savedSysId) === String(sysId)) {
+	                // [수정] 화면 새로고침 시 저장된 메뉴 코드로 메뉴 트리 복구
+	                setActiveMenu(savedMenuCd, savedUrl); 
+	              }
+	            } else {
+	              $("#portalMenuList").html('<li class="no-data" style="padding:20px;">메뉴가 없습니다.</li>');
+	            }
+	          } else {
+	            $("#portalMenuList").html(
+	              '<li style="padding:20px;">' + (res.message || "메뉴 로드 실패") + "</li>"
+	            );
+	          }
+	        },
+	      );
+	    }
+
+	    function escapeHtml(value) {
+	      return String(value ?? "")
+	        .replace(/&/g, "&amp;")
+	        .replace(/</g, "&lt;")
+	        .replace(/>/g, "&gt;")
+	        .replace(/"/g, "&quot;")
+	        .replace(/'/g, "&#39;");
+	    }
+
+	    function escapeAttr(value) {
+	      return String(value ?? "")
+	        .replace(/&/g, "&amp;")
+	        .replace(/"/g, "&quot;")
+	        .replace(/'/g, "&#39;")
+	        .replace(/</g, "&lt;")
+	        .replace(/>/g, "&gt;");
+	    }
+
+	    function normalizeMenuUrl(url) {
+	      if (!url || url === "#" || url === "null") return url;
+	      if (!/^https?:\/\//i.test(url)) return url;
+	      try {
+	        const parsed = new URL(url);
+	        const host = parsed.hostname;
+	        if (host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0") {
+	          parsed.hostname = window.location.hostname;
+	          return parsed.toString();
+	        }
+	      } catch (e) {
+	        return url;
+	      }
+	      return url;
+	    }
+
+	    function renderMenuHtml(menuList) {
+	      if (!menuList || menuList.length === 0) return "";
+	      let html = "";
+
+	      menuList.forEach((menu) => {
+	        const hasChild = menu.children && menu.children.length > 0;
+	        const liClass = hasChild ? "has-child" : "";
+	        
+	        const rawUrl = hasChild ? "#" : menu.menuUrl || "";
+	        const url = normalizeMenuUrl(rawUrl);
+	        const safeUrl = escapeAttr(url);
+	        const safeName = escapeHtml(menu.menuNm);
+
+	        const menuCd = escapeAttr(menu.menuCd || menu.menuId || "");
+
+	        html += `<li class="${liClass}">`;
+	        html += `<a href="#" class="menu-item" data-url="${safeUrl}" data-menucd="${menuCd}" data-name="${safeName}">
+	                    ${safeName}
+	                 </a>`;
+
+	        if (hasChild) {
+	          html += `<ul class="sub-menu">`;
+	          html += renderMenuHtml(menu.children);
+	          html += `</ul>`;
+	        }
+	        html += `</li>`;
+	      });
+	      return html;
+	    }
+	  </script>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <th:block th:replace="~{fragments/config :: config}"></th:block>
+	<th:block layout:fragment="individual_config"></th:block>
+	 <style>
+        body { background-color: #fff; padding: 20px; } /* 흰색 배경 유지 */
+    </style>
+</head>
+<body>
+    <div id="bizContent" class="container-fluid">
+        <h3>📂 메인 화면의 부서 관리 (HR System)</h3>
+        <table class="table table-bordered table-hover">
+            <thead>
+                <tr class="info">
+                    <th>부서코드</th>
+                    <th>부서명</th>
+                    <th>상위부서</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="dept : ${deptList}">
+                    <td th:text="${dept.deptCode}">HR01</td>
+                    <td th:text="${dept.deptName}">인사팀</td>
+                    <td th:text="${dept.upperDeptCode}">MGT00</td>
+                </tr>
+            </tbody>
+        </table>
+        <button class="btn btn-primary">신규 등록</button>
+    </div>
+	<div id="grid"></div>
+	
+    <script>
+        $(document).ready(function() {
+            // 컨텐츠 높이를 계산하여 부모 창(Portal Main)으로 전송
+            function sendHeight() {
+                var height = $('#bizContent').outerHeight(true);
+                // postMessage API 사용
+                window.parent.postMessage({ type: 'resize', height: height }, '*');
+            }
+            
+            sendHeight(); // 로드 시 전송
+            $(window).resize(sendHeight); // 창 크기 변경 시 전송
+        });
+    </script>
+	<script th:src="@{/js/draw.js}"></script>
+	<script th:src="@{/js/dept/dept.js}"></script>
+</body>
+</html>
