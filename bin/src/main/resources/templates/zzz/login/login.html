@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>E1 Portal Login</title>
+    <th:block th:replace="fragments/config :: config"></th:block>
+</head>
+
+<body>
+    <script>
+        if (window.top !== window.self) {
+            window.top.location = window.location.href;
+        }
+    </script>
+    <div class="wrap">
+
+        <div class="login">
+
+			<!-- Login Box -->
+            <div class="login__box">
+				
+				<!-- Login Header -->
+                <div class="login__header">
+                    <h1><img th:src="@{/img/logo-vertical.svg}" alt="이원정보기술"></h1>
+                    <p class="subtitle">업무 포털 시스템에 오신 것을 환영합니다.</p>
+                </div>
+				<!-- Login Header -->
+
+				
+				<!-- Login Form -->
+                <div class="login__form">
+					<form action="/login" method="post" class="login-form">
+	                    <dl>
+	                        <dt><label for="loginEmail">이메일</label></dt>
+	                        <dd><input id="loginEmail" name="email" placeholder="이메일을 입력하세요" /></dd>
+	                    </dl>
+
+	                    <dl>
+	                        <dt><label for="password">비밀번호</label></dt>
+	                        <dd><input type="password" id="password" name="password" placeholder="비밀번호를 입력하세요" /></dd>
+	                    </dl>
+
+	                    <div class="login__form--option">
+	                        <label class="label-ui">
+	                            <input type="checkbox"  id="saveId" />
+	                            <span>이메일 저장</span>
+	                        </label>
+	                        <a href="#" id="openPwChange" class="forgot-password">비밀번호 변경</a>
+	                    </div>
+
+	                    <button type="submit" class="btn btn--login">로그인</button>
+	                </form>
+				</div>
+				<!-- Login Form -->
+				
+				<!-- Login Footer -->
+                <div class="login__footer">
+                    <p>Copyright © E1 Corp. All Rights Reserved.</p>
+                </div>
+				<!-- Login Footer -->
+				
+				
+            </div>
+			<!-- Login Box -->
+			
+			
+        </div>
+
+        <th:block th:replace="zzz/login/pwChange :: pwChangeModal"></th:block>
+        <script th:src="@{/js/common/login.js}"></script>
+        <script th:src="@{/js/common/pwChange.js}"></script>
+    </div>
+	<th:block th:replace="~{fragments/loading :: loading}"></th:block>
+</body>
+
+</html>

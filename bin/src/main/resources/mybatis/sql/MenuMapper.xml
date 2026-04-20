@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.rotemDemo.zzz.main.mapper.MenuMapper">
+
+    <select id="selectMenuListBySysId_test" resultType="java.util.Map">
+        SELECT sys_id              as  sysId
+             , menu_id             as  menuId
+             , menu_nm             as  menuNm
+             , parent_menu_id      as  parentMenuId
+             , menu_url            as  menuUrl
+             , menu_depth          as  menuDepth
+             , sort_sn          as  sortOrder
+          FROM zzz_menu_info
+         WHERE sys_id = #{sysId}
+           AND use_yn = 'Y'
+         ORDER BY menu_depth ASC, sort_sn ASC
+    </select>
+    
+	<select id="selectSystemUrl" resultType="String">
+	    SELECT url_path
+	      FROM zzz_system_path
+	     WHERE sys_id = #{sysId}
+	       AND dvl_mode = #{dvlMode}
+	       AND use_yn = 'Y'
+	     LIMIT 1
+	</select>
+	
+    <select id="selectMenuListBySysId" resultType="java.util.Map">
+		SELECT DISTINCT
+		       A.sys_id          AS sysId
+		     , A.menu_id         AS menuId
+		     , A.menu_nm         AS menuNm
+		     , A.parent_menu_id  AS parentMenuId
+		     , A.menu_url        AS menuUrl
+		     , A.menu_depth      AS menuDepth
+		     , A.sort_sn         AS sortOrder
+		  FROM zzz_menu_info A
+		  JOIN zzz_role_auth B
+		    ON A.sys_id = B.sys_id
+		   AND A.menu_id = B.menu_cd
+		  JOIN zzz_role_user_auth C
+		    ON B.sys_id = C.sys_id
+		   AND B.role_cd = C.role_cd
+		 WHERE A.sys_id = #{sysId}          
+		   AND A.use_yn = 'Y'             
+		   AND C.emp_id = #{userId}     
+		   AND C.use_yn = 'Y'           
+		   AND (
+		          B.sel_auth_yn = 'Y'
+		       OR B.add_auth_yn = 'Y'
+		       OR B.mdfy_auth_yn = 'Y'
+		       OR B.del_auth_yn = 'Y'
+		       OR IFNULL(B.excl_up_auth_yn, 'N') = 'Y'
+		       OR IFNULL(B.excl_down_auth_yn, 'N') = 'Y'		       
+		       OR IFNULL(B.upld_auth_yn, 'N') = 'Y'
+		       OR IFNULL(B.down_auth_yn, 'N') = 'Y'
+		   )
+		 ORDER BY A.menu_depth ASC, A.sort_sn ASC   
+    </select>	
+</mapper>

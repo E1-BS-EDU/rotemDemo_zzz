@@ -48,4 +48,9 @@ public class mainRestController {
 
         return Map.of("result", true, "data", tree);
     }
+    
+    @PostMapping("/apiTest")
+    public Map<String, Object> test(@RequestBody Map<String, String> param) {
+        return Map.of("result", true, "data", param);
+    }
 }

@@ -1,0 +1,29 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+    <th:block th:fragment="footer">
+        
+        <div class="popup-container" id="alertPopupContainer" style="display:none;">
+            <div class="popup">
+                <div class="close-box">
+                    <button type="button" class="btn-close xLogo"></button>
+                </div>
+                <p id="alertPopupText" class="modal-title"></p>
+                <button id="alertButton" class="success_btn">확인</button>
+            </div>
+        </div>
+
+        <div class="popup-container" id="popupContainer" style="display:none;">
+            <div class="popup">
+                <div class="close-box">
+                    <button type="button" class="btn-close xLogo"></button>
+                </div>
+                <p id="popupText" class="modal-title"></p>
+                <button id="confirmButton" class="success_btn">확인</button>
+                <button id="cancelButton" class="success_btn">취소</button>
+            </div>
+        </div>
+
+    </th:block>
+</body>
+</html>
